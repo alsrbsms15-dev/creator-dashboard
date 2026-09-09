@@ -123,6 +123,21 @@ tbody tr:hover{background:var(--panel2)}
 .cllab{font-size:12.5px;font-weight:700;color:#475569;display:inline-flex;align-items:center}
 .clqbtn{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:7px 12px;font-size:12px;font-weight:700;color:var(--mut);cursor:pointer;font-family:inherit}
 .clqbtn:hover{border-color:var(--accent);color:var(--accent)}
+.kbar{position:relative;height:9px;border-radius:6px;background:#eef2f7;overflow:hidden;margin-top:7px}
+.kbar>i{position:absolute;left:0;top:0;bottom:0;border-radius:6px;background:linear-gradient(90deg,#3b6ef5,#6366f1)}
+.kbar.done>i{background:linear-gradient(90deg,#0e9f6e,#10b981)}
+.ktbl{border-collapse:collapse;width:100%;font-size:13px;font-variant-numeric:tabular-nums}
+.ktbl th,.ktbl td{border-bottom:1px solid var(--line);padding:9px 11px;text-align:right;white-space:nowrap}
+.ktbl th:first-child,.ktbl td:first-child{text-align:left}
+.ktbl thead th{background:var(--panel2);color:var(--mut);font-weight:700}
+.ktbl td.prog{width:180px}
+.ktbl tbody tr.sumrow td{background:#e8eef7;font-weight:800;color:#0f172a;border-top:2px solid #cbd5e1}
+.ktbl tbody tr.prerow td{background:#f5f7fa;color:#8b95a3;font-weight:600}
+.prebadge{display:inline-block;background:#e2e8f0;color:#64748b;border-radius:20px;padding:1px 8px;font-size:10.5px;font-weight:700;margin-left:4px;vertical-align:middle}
+.kpct{font-weight:800}.kpct.up{color:#0e9f6e}.kpct.mid{color:#3b6ef5}.kpct.low{color:#e0912a}
+.kpibox{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.kpibig{font-size:22px;font-weight:800;color:#0f172a}
+.kpisub{color:var(--mut);font-size:12.5px}
 .tcgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
 .tcgrid .t5tbl{font-size:12.5px}
 .tcgrid .t5tbl th,.tcgrid .t5tbl td{padding:8px 8px}
@@ -201,6 +216,10 @@ const GAVATAR = {"카오스 제로 나이트메어":"data:image/png;base64,iVBOR
 const LANGS = ["영어","일본어","한국어","중국어(번체)","태국어","중국어(간체)"];
 const LHEX = {"영어":"#3b6ef5","일본어":"#ef4444","한국어":"#10b981","중국어(번체)":"#f59e0b","태국어":"#8b5cf6","중국어(간체)":"#ec4899","기타":"#94a3b8"};
 /* English display names (data keys stay Korean) */
+/* 2026년 연말(12월) 파트너 크리에이터 확보 목표 (국내+글로벌) */
+const KPI_TARGET={"에픽세븐":{kr:60,gl:280,total:340},"카오스 제로 나이트메어":{kr:150,gl:900,total:1050},"로드나인 대홍마":{kr:60,gl:20,total:80},"로드나인 아시아":{kr:0,gl:450,total:450},"미래시":{kr:30,gl:60,total:90},"이클립스":{kr:130,gl:0,total:130},"데드어카운트":{kr:30,gl:60,total:90,pre:true}};
+function kpiOf(game){const t=KPI_TARGET[game]; if(!t) return null; if(t.pre) return {cur:0,target:t.total,kr:t.kr,gl:t.gl,pct:0,pre:true}; const cur=(DATA.roster_games&&DATA.roster_games[game])||0; return {cur:cur,target:t.total,kr:t.kr,gl:t.gl,pct:t.total?cur/t.total*100:0};}
+function kpiClass(p){return p>=100?'up':(p>=60?'mid':'low');}
 const GNAME_EN={"에픽세븐":"Epic Seven","카오스 제로 나이트메어":"Chaos Zero Nightmare","로드나인 대홍마":"Lord Nine (KR/TW)","로드나인 아시아":"Lord Nine (Asia)","미래시":"Miresi","이클립스":"Eclipse"};
 const LNAME_EN={"영어":"English","일본어":"Japanese","한국어":"Korean","중국어(번체)":"Chinese (Trad.)","태국어":"Thai","중국어(간체)":"Chinese (Simp.)","기타":"Other"};
 const GN=g=>LANG==='en'?(GNAME_EN[g]||g):g;   // game display name
@@ -479,7 +498,7 @@ function setHeader(){
 }
 function buildTabs(){
   tabsEl.innerHTML='';
-  const TABS=[{id:'summary',label:L('종합 요약','Overview')}].concat(GAMES.map(g=>({id:g,label:GN(g)}))).concat([{id:'creators',label:L('크리에이터 리스트','Creators')}]);
+  const TABS=[{id:'summary',label:L('종합 요약','Overview')}].concat(GAMES.map(g=>({id:g,label:GN(g)}))).concat([{id:'creators',label:L('크리에이터 리스트·랭킹','Creators·Ranking')}]);
   TABS.forEach(t=>{const b=document.createElement('div');b.className='tab'+(t.id===curTab?' active':'')+(t.id==='creators'?' tab-cre':'');b.textContent=t.label;
     b.onclick=()=>{curTab=t.id;[...tabsEl.children].forEach(c=>c.classList.remove('active'));b.classList.add('active');render();window.scrollTo(0,0);};tabsEl.appendChild(b);});
 }
@@ -504,8 +523,8 @@ function renderCreators(){
   w1.value=0; w2.value=Math.max(0,WK.length-1);
   const tilde=document.createElement('span');tilde.className='cllab';tilde.textContent='~';
   function mkq(t){const b=document.createElement('button');b.className='clqbtn';b.textContent=t;return b;}
-  const q1=mkq(L('최근 1주','Last 1w')),q2=mkq(L('최근 2주','Last 2w')),q4=mkq(L('최근 4주','Last 4w')),q6=mkq(L('최근 6주','Last 6w'));
-  pbar.appendChild(plab);pbar.appendChild(w1);pbar.appendChild(tilde);pbar.appendChild(w2);pbar.appendChild(q1);pbar.appendChild(q2);pbar.appendChild(q4);pbar.appendChild(q6);
+  const q1=mkq(L('최근 1주','Last 1w')),q2=mkq(L('최근 2주','Last 2w')),q4=mkq(L('최근 4주','Last 4w')),q6=mkq(L('최근 6주','Last 6w')),q8=mkq(L('최근 8주','Last 8w'));
+  pbar.appendChild(plab);pbar.appendChild(w1);pbar.appendChild(tilde);pbar.appendChild(w2);pbar.appendChild(q1);pbar.appendChild(q2);pbar.appendChild(q4);pbar.appendChild(q6);pbar.appendChild(q8);
   cCard.appendChild(pbar);
   // 검색·필터 바
   const bar=document.createElement('div');bar.className='clbar';
@@ -543,7 +562,7 @@ function renderCreators(){
   }
   search.addEventListener('input',draw);gsel.onchange=draw;lsel.onchange=draw;ssel.onchange=draw;w1.onchange=draw;w2.onchange=draw;
   const setLast=n=>{w1.value=Math.max(0,WK.length-n);w2.value=WK.length-1;draw();};
-  q1.onclick=()=>setLast(1);q2.onclick=()=>setLast(2);q4.onclick=()=>setLast(4);q6.onclick=()=>setLast(6);
+  q1.onclick=()=>setLast(1);q2.onclick=()=>setLast(2);q4.onclick=()=>setLast(4);q6.onclick=()=>setLast(6);q8.onclick=()=>setLast(8);
   draw();
   viewEl.appendChild(cCard);
 }
@@ -602,18 +621,33 @@ function renderSummary(){
     gg.appendChild(c);});
   viewEl.appendChild(gg);
 
+  // 2026 확보 KPI 현황
+  const cKPI=card(L('2026 파트너 크리에이터 확보 KPI','2026 Partner Creator Recruitment KPI'),
+    L('게임별 2026년 연말(12월) 목표 대비 현재 확보 현황','Current roster vs 2026 year-end target by game'));
+  {let tc=0,tt=0;
+    let h='<table class="ktbl"><thead><tr><th>'+L('게임','Game')+'</th><th>'+L('현재 확보','Current')+'</th><th>'+L('2026 목표','2026 Target')+'</th><th>'+L('달성률','Progress')+'</th><th class="prog"></th></tr></thead><tbody>';
+    GAMES.forEach(g=>{const k=kpiOf(g); if(!k) return; tc+=k.cur; tt+=k.target; const cls=kpiClass(k.pct),w=Math.min(100,k.pct);
+      h+=`<tr><td><b style="color:${GHEX[g]}">${GN(g)}</b></td><td>${fmt(k.cur)}</td><td>${fmt(k.target)}</td><td class="kpct ${cls}">${k.pct.toFixed(1)}%</td><td class="prog"><div class="kbar${k.pct>=100?' done':''}"><i style="width:${w}%"></i></div></td></tr>`;});
+    const dk=kpiOf('데드어카운트');
+    if(dk){h+=`<tr><td><b>${L('데드어카운트','Dead Account')}</b> <span class="prebadge">${L('개시 전','Pre-launch')}</span></td><td>${L('개시 전','Pre-launch')}</td><td>${fmt(dk.target)}</td><td>–</td><td class="prog"></td></tr>`;}
+    const tp=tt?tc/tt*100:0,tcls=kpiClass(tp),tw=Math.min(100,tp);
+    h+=`<tr class="sumrow"><td>${L('합계','Total')}</td><td>${fmt(tc)}</td><td>${fmt(tt)}</td><td class="kpct ${tcls}">${tp.toFixed(1)}%</td><td class="prog"><div class="kbar${tp>=100?' done':''}"><i style="width:${tw}%"></i></div></td></tr>`;
+    h+='</tbody></table>';
+    const dv=document.createElement('div');dv.style.overflowX='auto';dv.innerHTML=h;cKPI.appendChild(dv);}
+  viewEl.appendChild(cKPI);
+
   const NW=weeks.length;
-  const c1=card(L('게임별 주간 콘텐츠 수 추이','Weekly Content by Game'),L(`업로드 일자 기준 · 월~일 주간(전체 ${NW}주) · 끝점에 최신 주차값 표기 · 상세는 마우스오버`,`By upload date · Mon–Sun weekly (all ${NW} weeks) · latest value at endpoint · hover for detail`));
+  const c1=card(L('주간 콘텐츠 수','Weekly Content'),L(`업로드 일자 기준 · 월~일 주간(전체 ${NW}주) · 끝점에 최신 주차값 표기 · 상세는 마우스오버`,`By upload date · Mon–Sun weekly (all ${NW} weeks) · latest value at endpoint · hover for detail`));
   const s1=GAMES.map(g=>({name:GN(g),color:GHEX[g],data:weeks.map(w=>w.games[g].content)}));
   const ch1=document.createElement('div');ch1.className='chart';ch1.appendChild(lineChart(s1,weekLabels,{}));c1.appendChild(ch1);
   c1.appendChild(legend(GAMES.map(g=>({name:GN(g),color:GHEX[g]}))));
 
-  const c2=card(L('게임별 주간 뷰어십 추이','Weekly Viewership by Game'),L(`조회수 합계 · 월~일 주간(전체 ${NW}주) · 끝점에 최신 주차값 표기 · 상세는 마우스오버`,`Sum of views · Mon–Sun weekly (all ${NW} weeks) · latest value at endpoint · hover for detail`));
+  const c2=card(L('주간 뷰어십','Weekly Viewership'),L(`조회수 합계 · 월~일 주간(전체 ${NW}주) · 끝점에 최신 주차값 표기 · 상세는 마우스오버`,`Sum of views · Mon–Sun weekly (all ${NW} weeks) · latest value at endpoint · hover for detail`));
   const s2=GAMES.map(g=>({name:GN(g),color:GHEX[g],data:weeks.map(w=>w.games[g].views)}));
   const ch2=document.createElement('div');ch2.className='chart';ch2.appendChild(lineChart(s2,weekLabels,{}));c2.appendChild(ch2);
   c2.appendChild(legend(GAMES.map(g=>({name:GN(g),color:GHEX[g]}))));
 
-  const cCR=card(L('게임별 주간 활동 크리에이터 추이','Weekly Active Creators by Game'),L('월~일 주간 · 게임별 활동 크리에이터(고유 게시자) · 값은 마우스오버','Mon–Sun weekly · active creators per game (unique posters) · hover for values'));
+  const cCR=card(L('주간 활동 크리에이터 수','Weekly Active Creators'),L('월~일 주간 · 게임별 활동 크리에이터(고유 게시자) · 값은 마우스오버','Mon–Sun weekly · active creators per game (unique posters) · hover for values'));
   const crbox=document.createElement('div');crbox.className='chart';
   const crseries=GAMES.map(g=>({name:GN(g),color:GHEX[g],data:weeks.map(w=>w.games[g].active)}));
   crbox.appendChild(lineChart(crseries,weekLabels,{h:340}));
@@ -745,9 +779,19 @@ function aiBrief(game){
                                `<span class="ab-hl">${LN(topLang)}</span> (${fmt(topN)}) led activity this week, and it is `);
   const line3=lead+overall+'.';
 
+  // ④ KPI 현황 분석
+  const kp=kpiOf(game); let kline='';
+  if(kp){
+    const rem=Math.max(0,kp.target-kp.cur);
+    const judge=L(kp.pct>=100?'이미 목표를 초과 달성했습니다':(kp.pct>=75?'목표 대비 순항 중입니다':(kp.pct>=50?'목표의 절반 이상 도달했습니다':'목표 달성을 위해 확보 가속이 필요합니다')),
+                  kp.pct>=100?'target already exceeded':(kp.pct>=75?'on track vs target':(kp.pct>=50?'past the halfway mark':'recruitment pace needs to accelerate')));
+    kline=L(`2026 확보 목표 <b>${fmt(kp.target)}</b>명 중 현재 <b>${fmt(kp.cur)}</b>명(<b>${kp.pct.toFixed(0)}%</b>) 확보${kp.pct>=100?'':', 잔여 '+fmt(rem)+'명'} — ${judge}.`,
+            `${fmt(kp.cur)} of <b>${fmt(kp.target)}</b> recruited (<b>${kp.pct.toFixed(0)}%</b>)${kp.pct>=100?'':', '+fmt(rem)+' to go'} — ${judge}.`);
+  }
   return `<b class="ab-hl">${L('① 이번 주 실적','① This week')}</b> ${line1}`
        + `<br><b class="ab-hl">${L('② 60일 추세','② 60-day trend')}</b> ${line2}`
-       + `<br><b class="ab-hl">${L('③ 코멘트','③ Comment')}</b> ${line3}`;
+       + `<br><b class="ab-hl">${L('③ 코멘트','③ Comment')}</b> ${line3}`
+       + (kline?`<br><b class="ab-hl">${L('④ KPI','④ KPI')}</b> ${kline}`:'');
 }
 
 function renderGame(game){
@@ -768,6 +812,20 @@ function renderGame(game){
   ];
   kpis.forEach(k=>{const c=document.createElement('div');c.className='kpi';c.innerHTML=`<div class="lab">${k.lab}</div><div class="val">${k.val}</div><div class="dlt">${k.dlt}</div>`;grid.appendChild(c);});
   viewEl.appendChild(grid);
+
+  // 2026 확보 KPI 카드
+  const kpiG=kpiOf(game);
+  if(kpiG){
+    const cK=card(GN(game)+' - '+L('2026 확보 KPI','2026 Recruitment KPI'),
+      L('2026년 연말(12월) 파트너 크리에이터 확보 목표 대비 현재 현황','Current roster vs 2026 year-end recruitment target'));
+    const w=Math.min(100,kpiG.pct), cls=kpiClass(kpiG.pct), rem=Math.max(0,kpiG.target-kpiG.cur);
+    const box=document.createElement('div');
+    box.innerHTML=`<div class="kpibox"><div class="kpibig">${fmt(kpiG.cur)} <span class="kpisub">/ ${L('목표','target')} ${fmt(kpiG.target)}${L('명','')}</span></div><div class="kpct ${cls}" style="font-size:19px">${kpiG.pct.toFixed(1)}%</div></div>`
+      +`<div class="kbar${kpiG.pct>=100?' done':''}"><i style="width:${w}%"></i></div>`
+      +`<div class="kpisub" style="margin-top:9px">${L('국내 목표','KR target')} ${fmt(kpiG.kr)} · ${L('글로벌 목표','Global target')} ${fmt(kpiG.gl)} · ${kpiG.pct>=100?L('목표 초과 달성','target exceeded'):L('잔여','remaining')+' '+fmt(rem)+L('명','')}</div>`;
+    cK.appendChild(box);
+    viewEl.appendChild(cK);
+  }
 
   // 보고용 종합 콤보 차트 (전체·활동 크리에이터 + 뷰어십)
   const cR=card(GN(game)+' - '+L('종합 지표','Overview'),L('좌축=활동 크리에이터(선) · 우축=뷰어십(막대) · 주간/일간 전환 · 전체 크리에이터는 마우스오버','Left=Active creators (line) · Right=Viewership (bar) · weekly/daily toggle · total creators on hover'));
