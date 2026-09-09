@@ -190,7 +190,7 @@ table,.kpi .val,.gcard .grow b,.snap .val{font-variant-numeric:tabular-nums}
       <div class="sub" id="subline"></div>
     </div>
     <div class="langtoggle" id="langtoggle">
-      <button data-l="ko">KR</button><button data-l="en">EN</button>
+      <button data-l="ko">KR</button><button data-l="en">EN</button><button data-l="ja">JP</button>
     </div>
   </div></div>
 </header>
@@ -206,8 +206,8 @@ const DATA = {"generated": "2026-09-09 19:27 (월~일/DATA_SHEET 기준)", "game
 <script>
 /* ===================== i18n ===================== */
 let LANG='ko';
-try{const s=localStorage.getItem('dash_lang');if(s==='en'||s==='ko')LANG=s;}catch(e){}
-const L=(ko,en)=>LANG==='en'?en:ko;   // pick string by current language
+try{const s=localStorage.getItem('dash_lang');if(s==='en'||s==='ko'||s==='ja')LANG=s;}catch(e){}
+const L=(ko,en,ja)=>LANG==='ja'?(ja!==undefined?ja:(JA[en]!==undefined?JA[en]:en)):(LANG==='en'?en:ko);
 
 const GAMES = DATA.games;
 const GHEX = {"에픽세븐":"#3b6ef5","카오스 제로 나이트메어":"#f97316","로드나인 대홍마":"#10b981","로드나인 아시아":"#06b6d4","미래시":"#8b5cf6","이클립스":"#e11d48"};
@@ -221,27 +221,54 @@ const KPI_TARGET={"에픽세븐":{kr:60,gl:280,total:340},"카오스 제로 나�
 function kpiOf(game){const t=KPI_TARGET[game]; if(!t) return null; if(t.pre) return {cur:0,target:t.total,kr:t.kr,gl:t.gl,pct:0,pre:true}; const cur=(DATA.roster_games&&DATA.roster_games[game])||0; return {cur:cur,target:t.total,kr:t.kr,gl:t.gl,pct:t.total?cur/t.total*100:0};}
 function kpiClass(p){return p>=100?'up':(p>=60?'mid':'low');}
 const GNAME_EN={"에픽세븐":"Epic Seven","카오스 제로 나이트메어":"Chaos Zero Nightmare","로드나인 대홍마":"Lord Nine (KR/TW)","로드나인 아시아":"Lord Nine (Asia)","미래시":"Miresi","이클립스":"Eclipse"};
+const GNAME_JA={"에픽세븐":"エピックセブン","카오스 제로 나이트메어":"カオスゼロナイトメア","로드나인 대홍마":"ロードナイン (韓国/台湾)","로드나인 아시아":"ロードナイン (アジア)","미래시":"ミライシ","이클립스":"エクリプス"};
 const LNAME_EN={"영어":"English","일본어":"Japanese","한국어":"Korean","중국어(번체)":"Chinese (Trad.)","태국어":"Thai","중국어(간체)":"Chinese (Simp.)","기타":"Other"};
-const GN=g=>LANG==='en'?(GNAME_EN[g]||g):g;   // game display name
-const LN=l=>LANG==='en'?(LNAME_EN[l]||l):l;   // language display name
+const LNAME_JA={"영어":"英語","일본어":"日本語","한국어":"韓国語","중국어(번체)":"中国語(繁体)","태국어":"タイ語","중국어(간체)":"中国語(簡体)","기타":"その他"};
+const GN=g=>LANG==='ja'?(GNAME_JA[g]||g):(LANG==='en'?(GNAME_EN[g]||g):g);
+const LN=l=>LANG==='ja'?(LNAME_JA[l]||l):(LANG==='en'?(LNAME_EN[l]||l):l);
+/* 일본어 정적 라벨 사전 (영어 문자열 → 일본어). 없으면 영어로 폴백 */
+const JA={
+"🎮 Partner Creator Weekly Dashboard":"🎮 パートナークリエイター週次ダッシュボード",
+"Overview":"総合サマリー","Creators·Ranking":"クリエイター一覧・ランキング",
+"Latest Week Summary":"直近週サマリー","Week":"週",
+"Total Creators":"総クリエイター数","Weekly Active Creators":"週間アクティブクリエイター","Weekly Content":"週間コンテンツ数","Weekly Content Views":"週間コンテンツ再生数",
+"Owned content created":"自社コンテンツ制作数","Owned content basis":"自社コンテンツ基準","base week":"基準週",
+"Creators":"クリエイター","Active":"アクティブ","Content":"コンテンツ","Views":"再生数","Viewership":"再生数","Active Creators":"アクティブクリエイター",
+"Weekly Viewership":"週間再生数",
+"Last 3 Months Summary (Monthly)":"直近3ヶ月サマリー(月次)","Game":"ゲーム","Total":"合計","Grand Total":"総合計",
+"▲ Up":"▲ 増加","▼ Down":"▼ 減少","Viewership (Views)":"再生数",
+"2026 Partner Creator Recruitment KPI":"2026 パートナークリエイター獲得KPI","Current roster vs 2026 year-end target by game":"ゲーム別 2026年末(12月)目標に対する現在の獲得状況",
+"Current":"現在獲得","2026 Target":"2026 目標","Progress":"達成率","Dead Account":"デッドアカウント","Pre-launch":"開始前",
+"2026 Recruitment KPI":"2026 獲得KPI","Current roster vs 2026 year-end recruitment target":"2026年末(12月)獲得目標に対する現在状況","target":"目標","KR target":"国内目標","Global target":"グローバル目標","target exceeded":"目標超過達成","remaining":"残り",
+"Total Creators (registered)":"総クリエイター数(登録)","Latest roster":"最新ロスター基準","Active Creators (latest wk)":"アクティブクリエイター(直近週)","Content (latest wk)":"コンテンツ数(直近週)","Viewership (latest wk)":"再生数(直近週)",
+"Weekly":"週間","Daily (30d)":"日次(直近30日)","Viewership (bar)":"再生数(棒)","Daily Viewership Trend":"日次再生数推移","Monthly Content":"月間コンテンツ数","Monthly Viewership":"月間再生数","Monthly Active Creators":"月間アクティブクリエイター","Content Daily Trend · last 28 days":"コンテンツ 日次推移・直近28日","Monthly Content by Language":"言語別 月間コンテンツ数","Language":"言語","Platform":"プラットフォーム","Contents":"コンテンツ数","Total Views":"累計再生数","Last active":"最終活動","Link":"リンク","Open":"開く","Creator":"クリエイター",
+"Partner Creator List":"パートナークリエイター一覧","All games":"全ゲーム","All languages":"全言語","By contents":"コンテンツ数順","By views":"再生数順","By recency":"最近の活動順","By name":"名前順","All period":"全期間","Last 1w":"直近1週","Last 2w":"直近2週","Last 4w":"直近4週","Last 6w":"直近6週","Last 8w":"直近8週",
+"Showing top 1000 — narrow with search/filters.":"上位1000名のみ表示 — 検索・フィルターで絞り込んでください。",
+"No data for this week.":"該当週のデータがありません。","unchanged":"変化なし","flat":"横ばい","(new)":"(新規)","new":"新規","rising":"上昇傾向","declining":"下降傾向",
+"This week":"今週の実績","60-day trend":"直近60日トレンド","Comment":"コメント"
+};
 const MON_EN=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 /* short names for compare chart */
 const SG_KO={"에픽세븐":"에픽","카오스 제로 나이트메어":"카오스","로드나인 대홍마":"로드(대홍마)","로드나인 아시아":"로드(아시아)","미래시":"미래시","이클립스":"이클립스"};
 const SG_EN={"에픽세븐":"EP7","카오스 제로 나이트메어":"CZN","로드나인 대홍마":"LN(KR·TW)","로드나인 아시아":"LN(Asia)","미래시":"Miresi","이클립스":"Eclipse"};
-const SGN=g=>(LANG==='en'?SG_EN:SG_KO)[g]||GN(g);
+const SGN=g=>(LANG==='ko'?SG_KO:SG_EN)[g]||GN(g);
 /* short names for activity table */
 const DISP_KO={"에픽세븐":"에픽세븐","카오스 제로 나이트메어":"카제나","로드나인 대홍마":"로드나인","로드나인 아시아":"로드나인 아시아","미래시":"미래시","이클립스":"이클립스"};
 const DISP_EN={"에픽세븐":"Epic Seven","카오스 제로 나이트메어":"CZN","로드나인 대홍마":"Lord Nine","로드나인 아시아":"Lord Nine Asia","미래시":"Miresi","이클립스":"Eclipse"};
-const DISPN=g=>(LANG==='en'?DISP_EN:DISP_KO)[g]||GN(g);
+const DISPN=g=>(LANG==='ko'?DISP_KO:DISP_EN)[g]||GN(g);
 
 let METRICS, MSHORT;
 function applyLangConsts(){
-  METRICS = LANG==='en'
+  METRICS = LANG==='ja'
+    ? {content:"コンテンツ数",views:"再生数(視聴数)",active:"アクティブクリエイター"}
+    : (LANG==='en'
     ? {content:"Content",views:"Viewership (Views)",active:"Active Creators"}
-    : {content:"콘텐츠 수",views:"뷰어십(조회수)",active:"활동 크리에이터"};
-  MSHORT = LANG==='en'
+    : {content:"콘텐츠 수",views:"뷰어십(조회수)",active:"활동 크리에이터"});
+  MSHORT = LANG==='ja'
+    ? {content:"コンテンツ数",views:"再生数",active:"アクティブ"}
+    : (LANG==='en'
     ? {content:"Content",views:"Viewership",active:"Active Creators"}
-    : {content:"콘텐츠 수",views:"뷰어십",active:"활동 크리에이터"};
+    : {content:"콘텐츠 수",views:"뷰어십",active:"활동 크리에이터"});
 }
 applyLangConsts();
 
@@ -828,7 +855,7 @@ function renderGame(game){
   }
 
   // 보고용 종합 콤보 차트 (전체·활동 크리에이터 + 뷰어십)
-  const cR=card(GN(game)+' - '+L('종합 지표','Overview'),L('좌축=활동 크리에이터(선) · 우축=뷰어십(막대) · 주간/일간 전환 · 전체 크리에이터는 마우스오버','Left=Active creators (line) · Right=Viewership (bar) · weekly/daily toggle · total creators on hover'));
+  const cR=card(GN(game)+' - '+L('종합 지표','Overview','総合指標'),L('좌축=활동 크리에이터(선) · 우축=뷰어십(막대) · 주간/일간 전환 · 전체 크리에이터는 마우스오버','Left=Active creators (line) · Right=Viewership (bar) · weekly/daily toggle · total creators on hover'));
   const cRnote=cR.querySelector('.note');
   let rmode='week';
   const rbox=document.createElement('div');rbox.className='chart';
