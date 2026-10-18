@@ -617,6 +617,13 @@ body{word-break:keep-all;overflow-wrap:break-word}
 .mz-chi.na{opacity:.55;border-style:dashed}
 .mz-chnote{font-size:11.5px;color:#777;line-height:1.7;margin-top:12px}
 @media(max-width:900px){.mz-chg{grid-template-columns:1fr}.mz-evlang{grid-column:1/-1}}
+
+.mz-arch{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:4px 2px 14px}
+.mz-arch-h{font-size:11px;font-weight:800;letter-spacing:.14em;color:#6b6b6b;margin-right:4px}
+.mz-arch-b{font:inherit;font-size:12.5px;font-weight:700;border:1px solid #cfcfcf;background:#fff;color:#222;padding:5px 12px;border-radius:2px;cursor:pointer;display:inline-flex;gap:8px;align-items:baseline}
+.mz-arch-b small{font-size:10.5px;font-weight:600;color:#888}
+.mz-arch-b.on{background:#0b0b0b;color:#fff;border-color:#0b0b0b}.mz-arch-b.on small{color:#bbb}
+.mz-arch-b:hover{border-color:#0b0b0b}
 </style>
 </head>
 <body>
@@ -1355,6 +1362,7 @@ function renderMRHead(ctx){
   viewEl.appendChild(box);
 }
 
+function mzL9Order(arr){const a=arr.slice();const ia=a.findIndex(x=>x&&x.g==='로드나인 아시아'),ib=a.findIndex(x=>x&&x.g==='로드나인 대홍마');if(ia>=0&&ib>ia){const [b]=a.splice(ib,1);a.splice(ia,0,b);}return a;}
 function renderMRBody(ctx){
   const {ym,mm,m,pm}=ctx; const rp=MREPORT[ym]; const auto=rp?null:autoAnalysis(ctx);
   const arts=rp?rp.articles:(auto.findings||[]).map((f,i)=>({g:f.g,cover:i===0,kick:{k:i===0?'TOP STORY':'BRIEF',e:i===0?'TOP STORY':'BRIEF'},t:f.t,p:[f.b],big:f.big,bigl:f.bigl,dn:f.dn,warn:f.warn}));
@@ -1369,7 +1377,7 @@ function renderMRBody(ctx){
         ${a.big?`<div class="mz-big${a.dn?' dn':''}"><b>${mzNum(a.big)}</b><span>${MZ_T(a.bigl)}</span></div>`:''}</div>
       <div class="mz-rr"><div class="mz-abody">${(a.p||[]).map(x=>`<p>${MZ_T(x)}</p>`).join('')}</div>
         ${a.so?`<blockquote class="mz-so">${MZ_T(a.so)}</blockquote>`:''}${adv}${a.g?mzEvList(a.g,ym):''}</div>`;};
-  const ordered=arts.slice().sort((x,y)=>(y.cover?1:0)-(x.cover?1:0));
+  const ordered=mzL9Order(arts.slice().sort((x,y)=>(y.cover?1:0)-(x.cover?1:0)));
   const list=document.createElement('div');list.className='mz-rows';
   ordered.forEach((a,ix)=>{const d=document.createElement('article');d.className='mz-row'+(a.cover?' cover':'');d.style.setProperty?d.style.setProperty('--gc',a.g?GHEX[a.g]:'#0b0b0b'):0;d.innerHTML=rowHTML(a,ix+1);list.appendChild(d);});
   viewEl.appendChild(list);
@@ -1429,7 +1437,7 @@ function renderMRBody(ctx){
   const two=document.createElement('div');two.className='mrr-two';
   const mk=(ttl,ic,cls,items)=>{const b=document.createElement('div');b.className='card mrr-list '+cls;b.innerHTML=`<h3>${ic} ${ttl}</h3><ol>${items.map(it=>`<li>${it.g?`<span class="mrr-gchip sm" style="background:${GHEX[it.g]}1a;color:${GHEX[it.g]}">${GN(it.g)}</span> `:''}${MZ_T(it)}</li>`).join('')}</ol>`;return b;};
   two.appendChild(mk(L('확인이 필요한 것','Needs checking','要確認'),'⚠️','rk',(rp?rp.risks:auto.risks)||[]));
-  if(rp&&rp.actions&&rp.actions.length) two.appendChild(mk(L(`${mm%12+1}월에 할 일`,`For ${MON_EN[mm%12]}`,`${mm%12+1}月にやること`),'💡','ac',rp.actions));
+  if(rp&&rp.actions&&rp.actions.length) two.appendChild(mk(L(`${mm%12+1}월에 할 일`,`For ${MON_EN[mm%12]}`,`${mm%12+1}月にやること`),'💡','ac',mzL9Order(rp.actions)));
   viewEl.appendChild(two);
 
   /* 공식 SNS 채널 목록은 분석 참고용으로만 사용 (화면 노출 X) */
@@ -1465,6 +1473,13 @@ function renderMonthly(){
   pbtn.onclick=()=>window.print();
   head.appendChild(picker);head.appendChild(pbtn); /* 제목은 매거진 제호로 대체 */
   viewEl.appendChild(head);
+  // ---- 지난 호 아카이브 (발행본은 영구 보관) ----
+  {const pub=Object.keys(MREPORT).sort().reverse();
+   if(pub.length){const ar=document.createElement('div');ar.className='mz-arch mr-noprint';
+     ar.innerHTML=`<span class="mz-arch-h">${L('지난 호 아카이브','Back issues','バックナンバー')}</span>`+pub.map(y=>{const n=parseInt(y.slice(5,7),10);const by=(MREPORT[y].by&&MREPORT[y].by.k||'').match(/(\d{4}\.\d{2}\.\d{2})/);
+       return `<button class="mz-arch-b${y===ym?' on':''}" data-ym="${y}">${L(`${y.slice(0,4)}년 ${n}월호`,`${MON_EN[n-1]} ${y.slice(0,4)}`,`${y.slice(0,4)}年${n}月号`)}${by?`<small>${L('발행','pub.','発行')} ${by[1]}</small>`:''}</button>`;}).join('');
+     ar.querySelectorAll&&ar.querySelectorAll('.mz-arch-b').forEach(b=>b.onclick=()=>{window._selYm=b.dataset.ym;render();window.scrollTo(0,0);});
+     viewEl.appendChild(ar);}}
 
   // ---- 집계 기간 + 데이터 미반영 경고 ----
   const lastDay=new Date(+yy,mm,0).getDate();
