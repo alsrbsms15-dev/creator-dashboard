@@ -1957,6 +1957,23 @@ function renderGame(game){
    cRW.appendChild(bx);cRW.appendChild(comboLegend());}
   viewEl.appendChild(cRW);
 
+  // ①-b 종합 지표 (일간)
+  {const cRD=card('',L('업로드 일자 기준 일별 합계 · 좌축=활동 크리에이터·콘텐츠(선) · 우축=뷰어십(막대) · 값은 마우스오버',
+                      'Daily totals by upload date · left = active creators & content (lines) · right = viewership (bars) · hover for values',
+                      'アップロード日基準の日別合計 · 左軸=アクティブ・コンテンツ(線) · 右軸=再生数(棒) · マウスオーバーで数値'));
+   const tt=cRD.querySelector('h3'); let dN=28;
+   const dbx=document.createElement('div');dbx.className='chart';
+   const drawD=()=>{const dl=recentDaily(dN);
+     tt.textContent=GN(game)+' - '+L(`종합 지표 (일간 · 최근 ${dN}일)`,`Overview (daily · last ${dN} days)`,`総合指標(日次・直近${dN}日)`);
+     dbx.innerHTML='';
+     dbx.appendChild(comboChart(dl.map(d=>d.date.slice(5).replace('-','/')),{name:L('뷰어십','Viewership'),data:dl.map(d=>(d.games[game]||{}).views||0),color:'#f59e0b'},
+       [{name:L('활동 크리에이터','Active Creators'),data:dl.map(d=>(d.games[game]||{}).active||0),color:'#10b981'},
+        {name:L('콘텐츠 수','Content'),data:dl.map(d=>(d.games[game]||{}).content||0),color:'#3b6ef5',after:true}],
+       {w:1460,allX:dN<=31,maxBar:dN<=31?22:10,h:360}));};
+   cRD.appendChild(seg([{label:L('최근 28일','Last 28 days','直近28日'),val:28},{label:L('최근 60일','Last 60 days','直近60日'),val:60},{label:L('최근 90일','Last 90 days','直近90日'),val:90}],dN,v=>{dN=+v;drawD();}));
+   cRD.appendChild(dbx);drawD();cRD.appendChild(comboLegend());
+   viewEl.appendChild(cRD);}
+
   // ② 종합 지표 (월간)
   const cRM=card(GN(game)+' - '+L('종합 지표 (월간)','Overview (monthly)','総合指標(月間)'),
     L('업로드 일자 기준 월 합계 · 좌축=활동 크리에이터·콘텐츠(선) · 우축=뷰어십(막대) · 월말 전체 크리에이터 수는 마우스오버 · *표시 월은 집계 중',
