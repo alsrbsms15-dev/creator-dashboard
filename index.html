@@ -627,6 +627,11 @@ body{word-break:keep-all;overflow-wrap:break-word}
 .vmiss{display:inline-block;font-size:11px;font-weight:700;color:#94a3b8;border:1px dashed #cbd5e1;border-radius:4px;padding:0 6px;cursor:help}
 .note.vq{margin:-4px 2px 10px;color:#64748b}.note.vq b{color:#b45309}
 .vmiss-s{font-size:10.5px;color:#94a3b8;margin-left:3px;cursor:help;font-weight:600}
+.pngbtn{position:absolute;top:14px;right:14px;z-index:3;width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;color:#64748b;background:#fff;border:1px solid var(--line);border-radius:8px;padding:0;cursor:pointer;box-shadow:0 1px 2px rgba(16,24,40,.06)}
+.pngbtn svg{width:16px;height:16px;display:block}
+.card:has(> .pngbtn) > h3{padding-right:44px}
+.pngbtn:hover{color:#3b6ef5;border-color:#3b6ef5}
+@media print{.pngbtn{display:none}}
 </style>
 </head>
 <body>
@@ -2073,6 +2078,60 @@ function applyLang(lang){
 [...document.getElementById('langtoggle').children].forEach(b=>{
   b.onclick=()=>applyLang(b.dataset.l);
 });
+
+
+/* ===== 차트 PNG 저장 (보고서용 고해상도) ===== */
+function chartToPng(cardEl){
+  try{
+    const svgs=[...cardEl.querySelectorAll('svg')].filter(v=>v.getBoundingClientRect().width>50);
+    if(!svgs.length) return;
+    const title=(cardEl.querySelector('h3')||{}).textContent||'chart';
+    const noteEl=cardEl.querySelector('.note'); const note=noteEl?noteEl.textContent:'';
+    const legs=[...cardEl.querySelectorAll('.legend span')].map(sp=>{const d=sp.querySelector('.dot,i');return {c:d?getComputedStyle(d).backgroundColor:'#999',t:sp.textContent.trim()};});
+    const FONT='Pretendard, "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif';
+    const W=2400, PAD=60, scale=W/ (svgs[0].viewBox.baseVal.width||svgs[0].getBoundingClientRect().width);
+    // 각 SVG를 스타일 인라인 처리 후 직렬화
+    const PROPS=['fill','fill-opacity','stroke','stroke-width','stroke-opacity','stroke-dasharray','opacity','font-size','font-weight','text-anchor','dominant-baseline','display','visibility'];
+    const parts=svgs.map(sv=>{
+      const cl=sv.cloneNode(true); const src=sv.querySelectorAll('*'), dst=cl.querySelectorAll('*');
+      src.forEach((n,i)=>{const cs=getComputedStyle(n);let st='';PROPS.forEach(k=>{const v=cs.getPropertyValue(k);if(v)st+=k+':'+v+';';});st+='font-family:'+FONT+';';dst[i].setAttribute('style',st);});
+      const vb=sv.viewBox.baseVal; const vw=vb&&vb.width?vb.width:sv.getBoundingClientRect().width, vh=vb&&vb.height?vb.height:sv.getBoundingClientRect().height;
+      cl.setAttribute('xmlns','http://www.w3.org/2000/svg');cl.setAttribute('width',vw);cl.setAttribute('height',vh);cl.removeAttribute('style');
+      return {xml:new XMLSerializer().serializeToString(cl),vw,vh};});
+    const titleH=70, noteH=note?44:0, legH=legs.length?70:0;
+    const chartsH=parts.reduce((a,p)=>a+p.vh*(W-PAD*2)/p.vw+20,0);
+    const H=Math.round(PAD+titleH+noteH+chartsH+legH+PAD*0.6);
+    const cv=document.createElement('canvas');cv.width=W;cv.height=H;const cx=cv.getContext('2d');
+    cx.fillStyle='#ffffff';cx.fillRect(0,0,W,H);
+    cx.fillStyle='#0f172a';cx.font='800 44px '+FONT;cx.textBaseline='top';cx.fillText(title,PAD,PAD);
+    if(note){cx.fillStyle='#94a3b8';cx.font='500 24px '+FONT;cx.fillText(note.length>140?note.slice(0,140)+'…':note,PAD,PAD+titleH);}
+    let y=PAD+titleH+noteH; let idx=0;
+    const drawNext=()=>{
+      if(idx>=parts.length){
+        if(legs.length){cx.font='700 26px '+FONT;let tw=legs.reduce((a,l)=>a+40+cx.measureText(l.t).width+36,0);let x=(W-tw)/2;const ly=y+18;
+          legs.forEach(l=>{cx.fillStyle=l.c;cx.fillRect(x,ly,26,26);cx.fillStyle='#475569';cx.textBaseline='top';cx.fillText(l.t,x+38,ly-1);x+=40+cx.measureText(l.t).width+36;});}
+        cx.fillStyle='#cbd5e1';cx.font='500 18px '+FONT;cx.textBaseline='bottom';cx.textAlign='right';cx.fillText('Partner Creator Dashboard · '+(DATA.coverage?DATA.coverage.last:''),W-PAD,H-14);cx.textAlign='left';
+        if(window.__pngPreview){const im=new Image();im.src=cv.toDataURL();im.style.cssText='width:100%;border:4px solid #f00';document.body.prepend(im);return;}
+        cv.toBlob(b=>{const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=(title.replace(/[\\/:*?"<>|]/g,'').trim()||'chart')+'.png';document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},800);},'image/png');
+        return;}
+      const p=parts[idx++]; const img=new Image(); const dw=W-PAD*2, dh=p.vh*dw/p.vw;
+      img.onload=()=>{cx.drawImage(img,PAD,y,dw,dh);y+=dh+20;drawNext();};
+      img.onerror=()=>{y+=dh+20;drawNext();};
+      img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(p.xml);};
+    drawNext();
+  }catch(e){alert(L('이미지 저장에 실패했습니다: ','Export failed: ')+e.message);}
+}
+function decorateCharts(){
+  try{
+    viewEl.querySelectorAll('.card').forEach(c=>{
+      if(c.querySelector(':scope > .pngbtn')||!c.querySelector('svg'))return;
+      const b=document.createElement('button');b.className='pngbtn mr-noprint';b.type='button';
+      b.innerHTML='<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11"/><path d="M7 10l5 5 5-5"/><path d="M5 19h14"/></svg>';b.setAttribute('aria-label',L('이미지로 저장','Save as image','画像で保存'));b.title=L('이 그래프를 고해상도 PNG로 저장 (보고서용)','Save this chart as a high-res PNG','このグラフを高解像度PNGで保存');
+      b.onclick=(e)=>{e.stopPropagation();chartToPng(c);};
+      c.style.position=c.style.position||'relative';c.appendChild(b);});
+  }catch(e){}
+}
+(function(){const _r=render;render=function(){_r.apply(this,arguments);decorateCharts();};})();
 
 applyLang(LANG);
 </script>
