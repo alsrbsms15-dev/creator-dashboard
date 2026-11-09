@@ -445,6 +445,10 @@ body{word-break:keep-all;overflow-wrap:break-word}
 
 .mz-av{width:26px;height:26px;border-radius:50%;object-fit:cover;object-position:top center;border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.25)}
 .mz-by{color:#8a8072;font-weight:600}
+.mrr-care{margin-top:14px}.mrr-care h3{margin:0 0 10px}.mrr-care .cr{display:grid;grid-template-columns:92px 1fr;gap:4px 14px;padding:11px 0;border-top:1px solid #ece8df}.mrr-care .cr:first-of-type{border-top:none}
+.mrr-care .cd{font-weight:800;font-size:13px;color:#111;white-space:nowrap}.mrr-care .ct{font-weight:800;font-size:14.5px;margin-bottom:3px}.mrr-care .ck{font-size:13.5px;line-height:1.65;color:#444}.mrr-care .ca{font-size:13.5px;line-height:1.65;margin-top:4px}.mrr-care .ca em{font-style:normal;font-weight:800;color:#c2410c;margin-right:4px}
+.mrr-care .tg{display:inline-block;font-size:11px;font-weight:800;border-radius:4px;padding:1px 6px;margin-left:6px;vertical-align:1px;background:#eee;color:#555}.mrr-care .tg.risk{background:#fee2e2;color:#b91c1c}.mrr-care .tg.promo{background:#f1f0ec;color:#6b6457}
+@media(max-width:640px){.mrr-care .cr{grid-template-columns:1fr}}
 .mz-promo{margin-top:10px;padding:12px 16px;border:1px dashed #b8b2a6;border-radius:8px;background:#fafaf8;font-size:13.5px;line-height:1.7;color:#333}
 .mz-promo-h{font-size:11.5px;font-weight:800;letter-spacing:.04em;color:#6b6457;margin-bottom:4px}
 .mz-promo-h em{font-style:normal;background:#6b6457;color:#fff;border-radius:3px;padding:1px 6px;margin-right:6px}
@@ -1210,6 +1214,31 @@ const MREPORT={
    '에픽세븐':{k:'Steam 출시에 맞춰 <b>유료 인플루언서 프로모션</b>이 3단계(데모 10/9~19, 넥스트 페스트 10/20~27, 정식 출시 10/29~11/2)로 기획됐고, 기획안에는 파트너 미션 병행이 포함돼 있었습니다. 프로모션 결과 보고는 아직 확인하지 못해 성과는 별도로 봐야 합니다. 같은 기간 <b>파트너 콘텐츠</b>는 하루 52.6건 → 73.9건 → 111건이었고, 데모 단계는 E7WC 그룹 스테이지와 겹쳐 9월 평균(83.0건)보다 낮았습니다. <b>조언:</b> 프로모션 결과 보고가 나오면 단계별 성과를 파트너 반응과 나란히 놓고, 다음 대형 일정에서는 <b>프로모션 시작일에 파트너 미션도 같이 열어</b> 초기 단계부터 파트너 콘텐츠가 따라오게 해 주세요.',
           e:'A three-phase paid influencer promotion was planned for the Steam launch (demo, Next Fest, launch), with partner missions alongside; its results report is not yet available and must be read separately. Partner posts ran 52.6 → 73.9 → 111/day; the demo phase overlapped E7WC and fell below the Sept average. Compare phase results with partner response once available, and open partner missions on the promotion start date next time.'}
   },
+  care:{title:{k:'12월 크리에이터 케어 일정 · 미리 챙길 것',e:'December creator-care calendar'},
+   src:{k:'출처: 팀 슬랙·메일·위키 문서(2026.11.9 기준). 일정·조건은 협의 중인 내용이 포함돼 바뀔 수 있습니다. 비용·개인정보는 제외했습니다.',e:'Source: team Slack, mail and wiki as of Nov 9, 2026; some items are still under discussion. Costs and personal data omitted.'},
+   items:[
+    {d:'11/22~12/6',gs:[],ty:'risk',t:{k:'치지직 LoL 대회 기간',e:'CHZZK LoL cup'},
+     k:'다수의 치지직 크리에이터가 대회 참여·연습으로 바쁠 것으로 공유됐습니다.',e:'Many CHZZK creators will be busy with the tournament.',
+     a:{k:'이 기간에 거는 한국어권 파트너 미션은 마감을 넉넉히 잡거나 12/7 이후로 배치하세요.',e:'Give Korean partner missions in this window longer deadlines, or start them after Dec 7.'}},
+    {d:'12/1~12/20',gs:['에픽세븐','카오스 제로 나이트메어','로드나인 대홍마','로드나인 아시아','미래시','이클립스'],t:{k:'비버롹스 × 파트너 크리에이터 연계 미션',e:'Beaverocks × partner missions'},
+     k:'사전 미션(12/1~)과 메인 미션(12/18~, 행사 12/18~20 SETEC) 2종. 미션을 모두 마친 크리에이터에게 소속 게임 재화를 지원하는 안을 사업부와 협의 중입니다.',e:'Pre-mission from Dec 1 and main mission from Dec 18 (event Dec 18–20). In-game currency for completers is under discussion with each business team.',
+     a:{k:'팀 판단대로 재화 지원이 없으면 참여율이 낮을 가능성이 큽니다. 10월 이클립스의 보상 불만 사례처럼 <b>보상이 확정된 뒤 공지</b>해야 신뢰를 지킬 수 있으니, 게임별 재화 지원 여부를 11월 안에 확정해 주세요.',e:'Without currency support participation will likely be low; confirm rewards per game in November and announce only after they are final (cf. Eclipse in October).'}},
+    {d:'12/2~',gs:['카오스 제로 나이트메어'],ty:'promo',t:{k:'카제나 신규 전투원 「달리아」 업데이트',e:'CZN update: Dahlia'},
+     k:'같은 시점에 KOL 프로모션(합방 등)이 기획 중입니다. 프로모션 성과는 대시보드 지표와 별도로 봅니다.',e:'A KOL promotion is planned alongside; its results are tracked separately.',
+     a:{k:'10월에 파트너가 가장 크게 움직인 날은 업데이트 당일(+207%)이었습니다. 업데이트 전에 <b>한국어권 사전 자료와 파트너 미션</b>을 배포하고, KOL 합방 일정도 파트너에게 공유해 같은 날 파트너 콘텐츠가 함께 나오게 하세요.',e:'Partners moved most on update day in October (+207%). Ship Korean early materials and partner missions before the update, and share the KOL schedule with partners.'}},
+    {d:'12/3~',gs:['데드어카운트'],t:{k:'데드어카운트 동남아 소프트런칭 · 파트너 모집 시작',e:'Dead Account SEA soft launch · partner recruiting'},
+     k:'동남아 4개국 파트너 크리에이터 모집과 런칭 활동왕 이벤트(4주간 활동량·조회수 점수)를 함께 진행합니다. 글로벌 모집은 2027년 1월 예정입니다.',e:'Recruiting in four SEA countries with a 4-week launch activity contest (activity + views); global recruiting from Jan 2027.',
+     a:{k:'주간 엑셀에 데드어카운트 시트가 생기면 대시보드에 게임을 추가하겠습니다. 활동왕 점수의 활동량·조회수를 대시보드와 같은 기준으로 정의하면 별도 집계 없이 추적할 수 있습니다.',e:'Once the weekly Excel adds a Dead Account sheet, the game will be added here; define contest scoring on the same basis to track it without extra work.'}},
+    {d:'12/4~12/6',gs:['미래시','카오스 제로 나이트메어'],t:{k:'AGF 2026 (KINTEX) 크리에이터 초청',e:'AGF 2026 creator invitations'},
+     k:'미래시·카제나 출전. 크리에이터 초청은 작년 35명에서 올해 45~65명으로 예상되며, 미래시 등록 크리에이터 대상 초청 메일·참여 설문과 외부 행사용 크리에이터 모집 페이지를 함께 운영합니다.',e:'Miresi and CZN exhibit. Expected 45–65 invited creators (35 last year); Miresi creators get invitations and a survey, plus an external-event recruiting page.',
+     a:{k:'미래시는 등록 259명에 10월 활동 7명입니다. 초청에 <b>방문 후기 미션과 현장 소재</b>를 묶어 첫 콘텐츠로 이어지게 하고, 모집 페이지 유입 → 등록 → 첫 콘텐츠까지 단계별 인원을 기록해 다음 행사의 판단 근거로 남겨 주세요.',e:'Miresi has 259 registered but 7 active. Bundle a visit-review mission and assets with the invite, and log page visits → sign-ups → first posts.'}},
+    {d:'12월',gs:['카오스 제로 나이트메어'],t:{k:'카제나 12월 로드맵 쇼케이스',e:'CZN December roadmap showcase'},
+     k:'11/3 개발진 소통 방송에서 기대감을 예고했습니다.',e:'Teased in the Nov 3 dev chat.',
+     a:{k:'10/10 쇼케이스 때 파트너 콘텐츠는 이틀간 +19%에 그쳤습니다. 이번에는 <b>리액션·요약 미션</b>을 쇼케이스 전에 걸어 두세요.',e:'Partner posts rose only +19% around the Oct 10 showcase — set reaction/recap missions in advance.'}},
+    {d:'12월 말',gs:['미래시'],t:{k:'코미케(C109) — 미래시',e:'Comiket C109 — Miresi'},
+     k:'코스플레이 의상 약 20벌을 제작·제공하고, 11/11 이후 파트너 크리에이터에게 참여를 제안할 예정입니다.',e:'About 20 cosplay outfits; partner creators to be invited after Nov 11.',
+     a:{k:'참여 크리에이터에게 촬영 소재 사용 가이드를 함께 주어 일본어권 첫 콘텐츠로 연결하세요.',e:'Provide asset-use guidelines so participation turns into first Japanese-language content.'}}
+   ]},
   advice:{
    '에픽세븐':{k:'등록 334명으로 월 목표(310명)를 넘었고 활동은 248명을 유지했지만, 뷰어십은 15% 줄었습니다. <b>팀 액션과 대조</b>하면, Steam 데모 기간(10/9~19)은 E7WC 그룹 스테이지와 겹쳐 파트너 콘텐츠가 하루 52.6건으로 9월 평균(83.0건)보다 적었고, 넥스트 페스트(10/20~27) 73.9건을 거쳐 <b>정식 출시·파운드리 서버(10/29~31)에 하루 111건</b>으로 올라섰습니다. 출시와 함께 신서버 크리에이터 이벤트(10/29~11/4)와 파트너 미션이 붙은 시점입니다. 시사점은 두 가지입니다. ① 대회 기간에는 Steam 데모 같은 큰 일정이 겹쳐도 파트너 창작이 늘지 않았으니, 11월 결승 기간에는 <b>하이라이트·덱 분석처럼 대회를 소재로 쓰는 미션</b>이 필요합니다. ② 신서버 이벤트에서 <b>안내를 받지 못했다는 크리에이터 불만</b>이 나왔으니, 이벤트 공지는 활동 파트너 전원에게 같은 경로로 동시에 보내 주세요. 10월 첫 게시자 32명(7명은 Steam 출시 이후)의 <b>두 번째 콘텐츠</b>가 활동 수를 늘리는 지름길이고, 연말 목표(340명)까지 <b>6명</b> 남았습니다.',
           e:'Roster 334 beat the 310 target and actives held at 248, but views fell 15%. Against team actions: the Steam demo phase (Oct 9–19) overlapped E7WC and partner posts fell to 52.6/day (Sept avg 83.0); Next Fest 73.9/day; the official launch with the Foundry server, the new-server creator event and partner missions lifted posts to 111/day. During tournaments, use missions that turn the matches into content, and send event notices to every active partner through the same channel. Help October’s 32 first-time posters publish again; 6 to go for 340.'},
@@ -1594,6 +1623,13 @@ function renderMRBody(ctx){
   two.appendChild(mk(L('확인이 필요한 것','Needs checking','要確認'),'⚠️','rk',(rp?rp.risks:auto.risks)||[]));
   if(rp&&rp.actions&&rp.actions.length) two.appendChild(mk(L(`${mm%12+1}월에 할 일`,`For ${MON_EN[mm%12]}`,`${mm%12+1}月にやること`),'💡','ac',mzL9Order(rp.actions)));
   viewEl.appendChild(two);
+  if(rp&&rp.care&&rp.care.items&&rp.care.items.length){
+    const cb=document.createElement('div');cb.className='card mrr-care';
+    const chip=g=>`<span class="mrr-gchip sm" style="background:${(GHEX[g]||'#777777')}1a;color:${GHEX[g]||'#555'}">${GHEX[g]?GN(g):g}</span>`;
+    const TG={risk:L('주의','Watch','注意'),promo:L('프로모션 병행 · 지표 별도','Promotion alongside · separate metrics','プロモ併行 · 指標は別')};
+    cb.innerHTML=`<h3>📅 ${MZ_T(rp.care.title)}</h3>`+rp.care.items.map(it=>`<div class="cr"><div class="cd">${it.d}</div><div><div class="ct">${(it.gs||[]).map(chip).join(' ')} ${MZ_T(it.t)}${it.ty&&TG[it.ty]?`<span class="tg ${it.ty}">${TG[it.ty]}</span>`:''}</div><div class="ck">${MZ_T(it)}</div>${it.a?`<div class="ca"><em>${L('조언','Advice','助言')}</em>${MZ_T(it.a)}</div>`:''}</div></div>`).join('')+(rp.care.src?`<div class="ck" style="margin-top:8px;color:#888;font-size:12px">${MZ_T(rp.care.src)}</div>`:'');
+    viewEl.appendChild(cb);
+  }
 
   /* 공식 SNS 채널 목록은 분석 참고용으로만 사용 (화면 노출 X) */
   const ap=document.createElement('div');ap.className='mrr-appx';ap.innerHTML=`<span>📎 ${L('부록 · 상세 수치','Appendix · detailed figures','付録 · 詳細数値')}</span>`;
